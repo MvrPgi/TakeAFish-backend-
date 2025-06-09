@@ -1,89 +1,128 @@
 from dotenv import load_dotenv
 import os
 from pprint import pprint
-import requests
-from inference_sdk import InferenceHTTPClient  # Roboflow Inference import
+from inference_sdk import InferenceHTTPClient
+import json
+from utils import convert_bbox_to_cm as convert
 
-load_dotenv()
+load_dotenv()  # Load environment variables
 
-def get_species_from_image(image_path, model_id="fish-pytorch-phb1f/3"):
-    try:
-        # Get API key
-        api_key = os.getenv('API_KEY')
-        model_id = os.getenv('MODEL_ID', model_id)  # Use environment variable if set
-        
-        if not api_key:
-            return {
-                "error": "API key not found. Please set the API_KEY environment variable."
-            }
-        
-        # Check if image file exists
-        if not os.path.exists(image_path):
-            return {
-                "error": f"Image file not found: {image_path}"
-            }
-        
-        # Initialize Roboflow Inference client
-        client = InferenceHTTPClient(
-            api_url="https://detect.roboflow.com",
-            api_key=api_key
-        )
-        
-        # Make prediction
-        result = client.infer(image_path, model_id=model_id)
-        
-        return result
-        
-    except Exception as e:
-        return {
-            "error": f"An error occurred: {str(e)}"
-        }
+def predict_fish_specie(image_file):
+  try:
+    api_key = os.getenv('API_KEY')
+    model_id = os.getenv('MODEL_ID')
 
-def test_roboflow():
-    image_path = "test_images/test1.jpg"
-    
-    print(f"Testing image: {image_path}")
-    
-    try:
-        result = get_species_from_image(image_path)
-        
-        # Check if result is None
-        if result is None:
-            print("Error: get_species_from_image() returned None")
-            return
-            
-        # Check if result is the expected type (dict)
-        if not isinstance(result, dict):
-            print(f"Error: Expected dict, got {type(result)}: {result}")
-            return
-            
-        # Now safely check for error key
-        if "error" in result:
-            print(f"API Error: {result['error']}")
-        else:
-            print("Success! Species identification result:")
-            
-            # Process the results
-            detected_objects = result.get('predictions', [])
-            print(f"Number of objects detected: {len(detected_objects)}")
-            
-            for idx, obj in enumerate(detected_objects, start=1):
-                class_name = obj.get('class', 'Unknown')
-                confidence = obj.get('confidence', 0)
-                print(f"Object {idx}: Class = {class_name}, Confidence = {confidence:.2f}")
-                
-                # Additional details if available
-                if 'x' in obj and 'y' in obj:
-                    x, y = obj.get('x'), obj.get('y')
-                    width, height = obj.get('width', 0), obj.get('height', 0)
-                    print(f"    Position: ({x:.1f}, {y:.1f}), Size: {width:.1f} x {height:.1f}")
-            
-            print("\nFull result:")
-            pprint(result)
-            
-    except Exception as e:
-        print(f"Exception occurred: {e}")
-        print(f"Exception type: {type(e)}")
+    if not api_key:
+      return {"error": "Walang Key. Check Sa Environment File"}
 
-if __name__ == "__main__":
-    test_roboflow()
+    if not os.path.exists(image_file):
+      return {"error": f"Check Test_Images: {image_file}"}
+
+    if not model_id:
+      return {"error": "Walang Model ID. Check Sa Environment File"}
+
+    client = InferenceHTTPClient(
+      api_url="https://detect.roboflow.com",
+      api_key=api_key
+    )
+
+    result = client.infer(image_file, model_id)
+
+    return result
+
+  except Exception as e:
+    return {"error": f"May Error: {str(e)}"}
+
+
+
+
+def process_prediction(result):
+  """Process The Image And Return Formatted Results"""
+  if not result or "predictions" not in result or len(result["predictions"]) == 0:
+    return {"message": "Walang Isda Na Nadetect","fish_detected": []}
+  
+
+  pixels_per_cm = 37.7952755906 #standard pixel to cm conversion pero aayusin pa to
+  detected_fish = []
+
+
+  for prediction in result["predictions"]:
+
+    fish_data = {
+      "id":prediction.get("detection_id", "Unknown"),
+      "species":prediction.get("class", "Unknown"),
+      "confidence":prediction.get("confidence", 0),
+      "width_px":prediction.get("width", 0),
+      "height_px": prediction.get("height", 0)
+    }
+
+    width_cm, height_cm = convert(fish_data["width_px"],fish_data["height_px"] , pixels_per_cm)
+    fish_data.update({
+      "width_cm": width_cm,
+      "height_cm": height_cm,
+      "area_cm2": width_cm * height_cm
+    })
+
+    detected_fish.append(fish_data)
+
+
+  return {
+    "message": "Fish species detected successfully","fish_detected": detected_fish
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def test_predict_fish_specie():
+#   image = "test_images/test3.jpg"
+#   print(f"Testing image: {image}")
+#   pixels_per_cm = 37.7952755906  # Example value, adjust as needed
+
+#   result = predict_fish_specie(image) # Call the function to predict fish species
+
+
+#   # print("Full Result Dictionary:")
+#   # print(json.dumps(result, indent=4))
+
+  
+
+#   if not result or "predictions" not in result or len(result["predictions"])== 0:
+#     print("Walang Isda Na Nadetect")
+#     return
+  
+#   pixels_per_cm = 37.7952755906  # Example value, adjust as needed
+
+#   print("Detected Fish Species:")
+#   for prediction in result["predictions"]:
+#     id = prediction.get("detection_id", "Unknown")
+#     species = prediction.get("class", "Unknown")
+#     confidence = prediction.get("confidence", 0)
+#     width_px = prediction.get("width", 0)
+#     height_px = prediction.get("height", 0)
+
+  
+
+#     width_cm, height_cm = convert(width_px, height_px, pixels_per_cm)
+#     area_cm2 = width_cm * height_cm
+
+#     print(f"ID: {id}, Species: {species}, Confidence: {confidence:.2f}, "
+#           f"Width: {width_cm:.2f} cm, Height: {height_cm:.2f} cm, Area: {area_cm2:.2f} cm²")
+
+
+
+# if __name__ == "__main__":
+#   test_predict_fish_specie()
+  
+
+
