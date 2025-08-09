@@ -4,8 +4,48 @@ from pprint import pprint
 from inference_sdk import InferenceHTTPClient
 import json
 from utils import convert_bbox_to_cm as convert
+import math
 
 load_dotenv()  # Load environment variables
+
+
+GROWTH_PARAMETERS = {
+  "ISLAND MACKEREL":{"L_inf":30.1, "K":2.00, "t0":0.91},
+  "LAPU-LAPU":{"L_inf":30.9, "K":0.51, "t0":0.47},
+  "TULINGAN":{"L_inf":78.5, "K":1.25, "t0":0.85},
+  "BANGUS":{"L_inf":29.4, "K":0.090, "t0":0},
+  "TILAPIA":{"L_inf":44.2, "K":0.43, "t0":0.333},
+}
+
+
+
+def estimate_age(length_cm, species, maturity_threshold=0.8):
+    param = GROWTH_PARAMETERS.get(species.upper())
+    if param is None:
+        return {"error": f"Unknown species: {species}"}
+
+    try:
+        L_inf = param["L_inf"]
+        K = param["K"]
+        t0 = param["t0"]
+
+        maturity_length = L_inf * maturity_threshold
+        maturity_age = (math.log((L_inf - maturity_length) / L_inf) / -K) + t0
+        maturity_age_days = maturity_age * 365
+
+        # current age
+        current_age = (math.log((L_inf - length_cm) / L_inf) / -K) + t0
+        current_age_days = current_age * 365
+
+        days_before_maturity = maturity_age_days - current_age_days
+
+        return {
+            "days_before_maturity": max(0, round(days_before_maturity, 2))
+        }
+    except Exception as e:
+        return {"error": f"Error estimating age: {str(e)}"}
+
+
 
 def predict_fish_specie(image_file):
   try:
@@ -30,7 +70,7 @@ def predict_fish_specie(image_file):
 
     return result
 
-  except Exception as e:
+  except Exception as e:  
     return {"error": f"May Error: {str(e)}"}
 
 
@@ -57,12 +97,16 @@ def process_prediction(result):
     }
 
     width_cm, height_cm = convert(fish_data["width_px"],fish_data["height_px"] , pixels_per_cm)
-    fish_data.update({
-      "width_cm": width_cm,
-      "height_cm": height_cm,
-      "area_cm2": width_cm * height_cm
-    })
 
+
+    estimate_age_result = estimate_age(width_cm, fish_data["species"])
+    
+    fish_data.update({
+        "width_cm": width_cm,
+        "height_cm": height_cm,
+        "area_cm2": width_cm * height_cm,
+        "days_before_maturity": estimate_age_result.get("days_before_maturity", "Unknown")
+    })
     detected_fish.append(fish_data)
 
 

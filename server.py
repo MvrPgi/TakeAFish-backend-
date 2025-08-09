@@ -41,14 +41,14 @@ def upload_image():
 
             result = predict_fish_specie(temp_file_path)
 
-            os.unlink(temp_file_path)  # Clean up the temporary file
+            os.unlink(temp_file_path)  # Delete the temporary file after processing
 
             if "error" in result:
                 return jsonify(result), 500
             
 
             processed_result = process_prediction(result)
-            return processed_result, 200
+            return processed_result, 200 
         
 
         except Exception as e:
