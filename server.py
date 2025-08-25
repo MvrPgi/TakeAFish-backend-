@@ -40,28 +40,25 @@ def upload_image():
                 temp_file_path = temp_file.name
 
             result = predict_fish_specie(temp_file_path)
+            if "error" in result:
+                os.unlink(temp_file_path)  # Clean up temp file before returning
+                return jsonify(result), 500
 
+            # ✅ Pass image file path to process_prediction
+            processed_result = process_prediction(result, temp_file_path)
             os.unlink(temp_file_path)  # Delete the temporary file after processing
 
-            if "error" in result:
-                return jsonify(result), 500
-            
+            return jsonify(processed_result), 200
 
-            processed_result = process_prediction(result)
-            return processed_result, 200 
-        
-
-        except Exception as e:
+        except Exception as e:           
             # Clean Up Temporary File If It Exists
             if os.path.exists(temp_file_path):
                 try:
                     os.unlink(temp_file_path)
                 except:
                     pass
-
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-    return {"error": "Invalid Request"}, 400
-              
+        return {"error": "Invalid Request"}, 500
 
 
 
