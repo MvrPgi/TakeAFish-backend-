@@ -1,2 +1,5 @@
 TAKEAFISHB/
 .env
+check.py
+test_images/
+app.log
