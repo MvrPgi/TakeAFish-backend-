@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: TakeAFish-backend-
+    name: TakeAFish-backend
     runtime: python
-    plan: free                   # You can switch to starter/paid later if needed
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python server.py
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python server.py"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
