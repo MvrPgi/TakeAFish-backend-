@@ -1,3 +1,4 @@
+# config.py
 GROWTH_PARAMETERS = {
   "ISLAND MACKEREL":{"L_inf":30.1, "K":2.00, "t0":0.91},
   "LAPU-LAPU":{"L_inf":30.9, "K":0.51, "t0":0.47},
@@ -21,3 +22,7 @@ CLASS_ID_TO_COIN = {
 
 PIXELS_PER_CM = 37.7952755906
 
+
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB

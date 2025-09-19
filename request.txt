@@ -1,3 +1,0 @@
-HTTP 400 Bad Request
-HTTP 500 Internal Server Error
-HTTP 200 Transaction Successful
