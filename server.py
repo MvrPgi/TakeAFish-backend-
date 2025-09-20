@@ -5,6 +5,7 @@ import tempfile
 from services.species import predict_fish_specie, process_prediction
 import logging
 from services.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE
+from werkzeug.datastructures import FileStorage
 
 app = Flask(__name__)
 
@@ -52,7 +53,6 @@ def upload_image():
             file.seek(0)
             file.save(temp_file.name)
             file.seek(0)
-            from werkzeug.datastructures import FileStorage
             if isinstance(file, FileStorage):
                 file.save(temp_file.name)
             else:

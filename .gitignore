@@ -2,3 +2,4 @@ TAKEAFISHB/
 .env
 check.py
 app.log
+.gitignore

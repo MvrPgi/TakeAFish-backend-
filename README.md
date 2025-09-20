@@ -70,6 +70,7 @@ The application logs events to `app.log` for monitoring and debugging purposes.
 - `MODEL_ID`: The model ID for fish species identification.
 - `REFERENCE_API_KEY`: API key for reference object detection.
 - `COIN_MODEL_ID`: Model ID for reference object detection.
+- `GOOGLE_SHEETS_CREDENTIALS`: Path to your Google Sheets API credentials JSON file.
 
 
 ## Fish Species Datasets
@@ -205,6 +206,8 @@ The reference objects datasets used in this project are derived from the Philipp
   - Remove old coins and used new philippines coins
   - Used roboflow's duplicate image detection to eliminate duplicates.
   - Added augmentations to improve model robustness to orientation changes.
+
+  
 
 ## Tools Used 
 - **Flask:** Web framework for building the backend server.
