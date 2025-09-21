@@ -150,6 +150,10 @@ The Cherry Blossom and Sakura Tree datasets are custom derivatives created for t
 - **Purpose:** Designed to address confusion between lapu-lapu and tilapia.
 - **Augmentation:** 2x rotation for orientation robustness.
 - **Model:** YOLOv11 Accurate
+  - mAP@50: 97.8%
+  - Precision: 97.6%
+  - Recall: 96.7%
+- Note: Early stop because the model stagnated around 30 epochs and continued until 100 epochs. This is based on my previous model(Cherry Blossom) which stagnated around 75 epochs.
 
 ## Reference Objects Datasets
 
@@ -201,6 +205,8 @@ The reference objects datasets used in this project are derived from the Philipp
   - Remove AI generated images to ensure authenticity.
   - Used roboflow's duplicate image detection to eliminate duplicates.
   - Concern is the overall low number of images for certain species and more populated species like tilapia and bangus. This needs more evaluation.
+  - Some of the classes have augmentation such as random cropping, and flipping to improve model robustness. That is why roboflow augmentation options
+    is restricted/limited.
 
 - **Reference Objects Datasets:**
   - Remove old coins and used new philippines coins

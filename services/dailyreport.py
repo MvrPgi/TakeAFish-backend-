@@ -33,56 +33,72 @@ sheet = client.open("Fish Predictions").sheet1  # Open the Google Sheet
 data = sheet.get_all_records()  # Get all data from the sheet
 
 
-one_day_ago = datetime.now() - timedelta(days=1)
-recent_data = [row for row in data if datetime.strptime(row["Date/Time"], "%Y-%m-%d %H:%M:%S") >= one_day_ago]
+def get_recent_data():
+    """Fetch fish predictions from the last 24 hours."""
+    try:
+        data = sheet.get_all_records()
+    except Exception as e:
+        logging.error(f"Failed to fetch Google Sheet data: {e}")
+        return []
 
-total_fish = len(recent_data)
-species_count = {}
-for row in recent_data:
-    species = row["Species"]
-    species_count[species] = species_count.get(species, 0) + 1
+    one_day_ago = datetime.now() - timedelta(days=1)
+    recent_data = []
+    for row in data:
+        try:
+            dt = datetime.strptime(row["Date/Time"], "%Y-%m-%d %H:%M:%S")
+            if dt >= one_day_ago:
+                recent_data.append(row)
+        except (ValueError, KeyError):
+            logging.warning(f"Skipping row due to missing or invalid Date/Time: {row}")
+    return recent_data
 
-species_rows = "".join(
-    f"<tr><td>{species}</td><td style='text-align:right;'>{count}</td></tr>"
-    for species, count in species_count.items()
-) or "<tr><td colspan='2' style='text-align:center;color:#777;'>No data recorded this day</td></tr>"
+def build_email_content(recent_data):
+    total_fish = len(recent_data)
+    species_count = {}
+    for row in recent_data:
+        species = row.get("Species", "Unknown")
+        species_count[species] = species_count.get(species, 0) + 1
 
+    species_rows = "".join(
+        f"<tr><td>{species}</td><td style='text-align:right;'>{count}</td></tr>"
+        for species, count in species_count.items()
+    ) or "<tr><td colspan='2' style='text-align:center;color:#777;'>No data recorded this day</td></tr>"
 
-with open("templates/email_template.html", "r", encoding="utf-8") as f:
-    html_template = f.read()
+    with open("templates/email_template.html", "r", encoding="utf-8") as f:
+        html_template = f.read()
 
-html_content = html_template.replace("{{total_fish}}", str(total_fish)) \
-                           .replace("{{species_rows}}", species_rows) \
-                           .replace("{{generated_at}}", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    return html_template.replace("{{total_fish}}", str(total_fish)) \
+                        .replace("{{species_rows}}", species_rows) \
+                        .replace("{{generated_at}}", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 def send_report():
-    try:
-        recipient = REPORT_RECIPIENT
+    """Send daily fish detection report via email."""
+    recent_data = get_recent_data()
+    html_content = build_email_content(recent_data)
 
+    try:
         msg = MIMEMultipart()
         msg["From"] = EMAIL_ADDRESS
-        msg["To"] = recipient
+        msg["To"] = REPORT_RECIPIENT
         msg["Subject"] = "Daily Fish Detection Report"
         msg.attach(MIMEText(html_content, "html"))
 
-        # --- Option 1: SSL (recommended) ---
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            smtp.sendmail(EMAIL_ADDRESS, recipient, msg.as_string())
+            smtp.sendmail(EMAIL_ADDRESS, REPORT_RECIPIENT, msg.as_string())
 
         logging.info("Daily report email sent successfully via SSL!")
-
     except smtplib.SMTPNotSupportedError:
-        # --- Option 2: Fallback to STARTTLS if SSL fails ---
         with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-            smtp.ehlo()
             smtp.starttls()
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            smtp.sendmail(EMAIL_ADDRESS, recipient, msg.as_string())
-            print("Daily report email sent successfully via STARTTLS!")
-
+            smtp.sendmail(EMAIL_ADDRESS, REPORT_RECIPIENT, msg.as_string())
+        logging.info("Daily report email sent successfully via STARTTLS!")
     except Exception as e:
-        import logging
-        logging.error(f" Failed to send daily report email: {e}")
-send_report()
+        logging.error(f"Failed to send daily report email: {e}")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    send_report()

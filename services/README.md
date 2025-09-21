@@ -20,9 +20,13 @@ This directory contains the core services for the TakeAFish backend application.
   - Contains configuration settings and constants used across services.
   - Includes model paths, class mappings, and other parameters.
 
+- **service/dailyreport.py**
+  - Generates and sends daily reports of fish species identifications.
+  - Summarizes data and sends email notifications to stakeholders.
+
 ---
 
-## Setup Instructions
+## Setup Instructions For Google Sheets Integration
 
 1. **Create the Google Sheet**
    - Go to Google Sheets and create a new blank sheet.
@@ -62,3 +66,27 @@ This directory contains the core services for the TakeAFish backend application.
 7. **Integrate With Flask**
    - On successful prediction, call a function like `send_prediction_to_sheet(prediction_dict)`.
    - Each prediction will automatically append to the sheet in real time.
+
+## Set Up Instructions For Email Notifications
+
+1. **Create a Gmail Account**
+   - Create a new Gmail account to send emails from (e.g., `fishreports@gmail.com`).
+
+2. **Enable "Less Secure App Access"**
+
+    - Go to app passwords.google.com.
+    - Select "Other (Custom name)" and enter a name (e.g., `TakeAFishApp`).
+    - Click Generate and copy the 16-character app password.
+
+3. **Update Email Configuration in `dailyreport.py`**
+    - Open `services/dailyreport.py`.
+    - Update the `GMAIL_ADDRESS` and `EMAIL_PASSWORD` variables with your Gmail address and the generated app password.
+    ```python
+    GMAIL_ADDRESS = "fishreports@gmail.com"
+
+    GMAIL_APP_PASSWORD = "your_generated_app_password"
+
+    REPORT_RECIPIENTS = ["recipient1@example.com", "recipient2@example.com"]
+    ```
+
+

@@ -29,17 +29,12 @@ def save_to_sheets(processed_result):
         current_values = sheet.get_all_values()
         start_row = len(current_values) + 1  
 
+        coin_used = processed_result.get(
+            "coin_used", {"pixels_per_cm": None, "coin_label": None}
+        )
 
-        coin_used = processed_result.get("coin_used", {"pixels_per_cm": None, "coin_label": None}) # Default if missing
-
-        
-        coin_label_raw = coin_used.get("coin_label")
+        coin_label = coin_used.get("coin_label") or "Default"
         pixels_per_cm = coin_used.get("pixels_per_cm")
-
-        if coin_label_raw is None:
-            coin_label = "Default"
-        else:
-            coin_label = coin_mapping.get(coin_label_raw, "Unknown")
 
         for fish in processed_result["fish_detected"]:
             row = [
