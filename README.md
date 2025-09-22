@@ -222,6 +222,14 @@ The reference objects datasets used in this project are derived from the Philipp
 
 
 
+## Official Documentation
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Roboflow Documentation](https://docs.roboflow.com/)
+- [YOLOv11 Documentation](https://docs.roboflow.com/object-detection/yolov11)
+- [Google Sheets API Documentation](https://developers.google.com/sheets/api)
+- [Render.com Documentation](https://render.com/docs)
+- [Python Documentation](https://docs.python.org/3/)
+- [https://www.unitconverters.net/typography/pixel-x-to-centimeter.html] - For converting pixel to cm
 
-
+## License
 
