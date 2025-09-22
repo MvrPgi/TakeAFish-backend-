@@ -4,7 +4,7 @@ from services.utils import convert_bbox_to_cm as convert, run_inference
 from services.utils import calculate_pixels_per_cm
 import math
 from services.config import CLASS_ID_TO_COIN, GROWTH_PARAMETERS,  PIXELS_PER_CM
-from services.storage import save_to_sheets
+#from services.storage import save_to_sheets
 load_dotenv()  # Load environment variables
 
 
