@@ -9,6 +9,8 @@ services:
       - key: PYTHON_VERSION
         value: 3.12.7
 
+        value: 3.12.0
+
   - type: cron
     name: daily-report
     plan: free
