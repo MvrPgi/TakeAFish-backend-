@@ -148,7 +148,7 @@ def process_prediction(result, image_file):
     }
 
     logging.info(f"Final processed result: {final_result}")
-    save_to_sheets(final_result)
+    # save_to_sheets(final_result)
     return final_result
 
 
