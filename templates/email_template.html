@@ -1,0 +1,69 @@
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      color: #004085;
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+    }
+    th {
+      background-color: #004085;
+      color: white;
+      text-align: left;
+    }
+    .summary {
+      font-size: 16px;
+      margin: 15px 0;
+      font-weight: bold;
+      color: #333;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      color: #888;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <h1>Weekly Fish Detection Report</h1>
+    <p class="summary">Total Fish Detected: {{total_fish}}</p>
+    <table>
+      <tr><th>Species</th><th>Count</th></tr>
+      {{species_rows}}
+    </table>
+    <p class="footer">
+      This is an automated report generated on {{generated_at}}<br>
+      Please do not reply directly to this email.
+    </p>
+  </div>
+</body>
+</html>

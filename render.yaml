@@ -8,3 +8,15 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.7
+
+        value: 3.12.0
+
+  - type: cron
+    name: daily-report
+    plan: free
+    schedule: "0 9 * * *"   
+    buildCommand: ""        
+    startCommand: python daily_report.py
+    envVars:
+      - key: GOOGLE_CREDS_JSON
+        sync: false

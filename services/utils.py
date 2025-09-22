@@ -18,7 +18,7 @@ def convert_bbox_to_cm(width_px, height_px, pixels_per_cm):
 
 
 # Calculate pixels per cm for detected coin
-from config import REFERENCE_COINS_DIAMETER_CM
+from services.config import REFERENCE_COINS_DIAMETER_CM
 
 def calculate_pixels_per_cm(coin_prediction, coin_label):
     """
