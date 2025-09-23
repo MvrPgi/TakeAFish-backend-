@@ -144,7 +144,8 @@ The Cherry Blossom and Sakura Tree datasets are custom derivatives created for t
   - mAP@50: 98.1%
   - Precision: 97.9%
   - Recall: 97.3%
-
+- Note: 5th alteration of my model training in this model I used 5 species unlike the previous models which is 3 species. In this model I made a mistake to not early stop around 100 epoch which show in the graph that is stagnated around 100 epochs. 
+![alt text](/uploads/CherryFish.png)
 ### 6. Sakura Tree Dataset (Custom)
 - **Origin:** Derived from the Fish Classification, Fish-gres, Fish-pYTORCH, and Fish datasets.
 - **Purpose:** Designed to address confusion between lapu-lapu and tilapia.
@@ -153,7 +154,10 @@ The Cherry Blossom and Sakura Tree datasets are custom derivatives created for t
   - mAP@50: 97.8%
   - Precision: 97.6%
   - Recall: 96.7%
-- Note: Early stop because the model stagnated around 30 epochs and continued until 100 epochs. This is based on my previous model(Cherry Blossom) which stagnated around 75 epochs.
+- Note: Early stop because the model stagnated around 30 epochs and continued until 100 epochs. This is based on my previous model(Cherry Blossom) which stagnated around 75 epochs. The graph shows stagnation and close training and validation loss which means the model is not overfitting. Take note the unbalance classes of the dataset.
+
+
+![alt text](/uploads/SakuraFish.png)
 
 ## Reference Objects Datasets
 
@@ -182,22 +186,39 @@ The reference objects datasets used in this project are derived from the Philipp
 - **Images:** 923 training, 271 validation, 132 testing.
 - **Preprocessing:** Auto-orient and resize to 640x640.
 - **Model:** Early Stop YOLOv11 Accurate Checkpoint (COCOs)
-  - mAP@50: 99.4%
-  - Precision: 99.0%
-  - Recall: 99.4%
+   - mAP@50: 99.4%
+    - Precision: 99.0%
+    - Recall: 99.4%
+- **NOTE:** Box, Class, And DFL loss both training and validation steadly decreased until 50 epochs. meaning the model is still learning. My mistake is i did not set early stop to 50 epochs. 
+
+![Reference Object Example](uploads/MapleRef.png)
 
 ### 2. Sakura Tree Reference Dataset
 - **Origin:** Derived from the Philippine Money Dataset.
 - **Images:** 2,649 training, 271 validation, 132 testing.
 - **Preprocessing:** Auto-orient and resize to 640x640.
-- **Augmentation:** 90-degree rotation (counter-clockwise, clockwise, upside down) for orientation robustness.
+- **Augmentation:** 90-degree rotation (counter-clockwise, clockwise, upside down) for orientation robustness. Flip horizontal 
 - **Model:** YOLOv11 Accurate
   - mAP@50: 99.4%
   - Precision: 99.2%
   - Recall: 98.4%
+- **NOTE:** Box, Class, And DFL loss both training and validation steadly decreased until 50 epochs. I decided to stop it at 50
+
+![alt text](uploads/SakuraRef.png)
 
 
+### 3. Oak Tree Reference Dataset
+- **Origin:** Derived from the Philippine Money Dataset.
+- **Images:** 2,312 training, 207 validation, 108 testing.
+- **Preprocessing:** Auto-orient and resize to 640x640.
+- **Augmentation:** 90-degree rotation (counter-clockwise, clockwise, upside down) for orientation robustness. Rotation between -34 to 34 degrees to improve orientation robustness.
+- **Model:** YOLOv11 Accurate
+  - mAP@50: 99.4%
+  - Precision: 99.2%
+  - Recall: 99.3%
+- **NOTE:** Box, Class, And DFL loss both training and validation steadly decreased until 50 epochs. I decided to stop it at 50 
 
+ ![alt text](uploads/OakRef.png)
 ## Considerations In Cleaning Datasets
 - **Fish Species Datasets:**
   - Removed images with multiple fish species to avoid confusion during training.

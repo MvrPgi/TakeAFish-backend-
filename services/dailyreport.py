@@ -2,13 +2,14 @@ import os
 import smtplib
 import gspread
 import json
+import csv
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from oauth2client.service_account import ServiceAccountCredentials
 import logging
-
 
 # Load .env file
 load_dotenv()
@@ -29,8 +30,7 @@ creds_dict = json.loads(GOOGLE_CREDS_JSON)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-sheet = client.open("Fish Predictions").sheet1  # Open the Google Sheet
-data = sheet.get_all_records()  # Get all data from the sheet
+sheet = client.open("Fish Predictions").sheet1
 
 
 def get_recent_data():
@@ -51,6 +51,28 @@ def get_recent_data():
         except (ValueError, KeyError):
             logging.warning(f"Skipping row due to missing or invalid Date/Time: {row}")
     return recent_data
+
+
+def build_csv_file(recent_data):
+    """Generate a daily CSV report and return the filename."""
+    filename = f"daily_report_{datetime.now().strftime('%Y%m%d')}.csv"
+    headers = ["Date/Time", "Species", "Confidence", "Location"]
+
+    with open(filename, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+        for row in recent_data:
+            writer.writerow({
+                "Date/Time": row.get("Date/Time", ""),
+                "Species": row.get("Species", ""),
+                "Confidence": row.get("Confidence", ""),
+                "Location": row.get("Location", "")
+            })
+
+    return filename
+
+
+
 
 def build_email_content(recent_data):
     total_fish = len(recent_data)
@@ -73,8 +95,13 @@ def build_email_content(recent_data):
 
 
 def send_report():
-    """Send daily fish detection report via email."""
+    """Send daily fish detection report via email and archive CSV."""
     recent_data = get_recent_data()
+    if not recent_data:
+        logging.info("No recent data to report.")
+        return
+
+    csv_file = build_csv_file(recent_data)
     html_content = build_email_content(recent_data)
 
     try:
@@ -83,6 +110,12 @@ def send_report():
         msg["To"] = REPORT_RECIPIENT
         msg["Subject"] = "Daily Fish Detection Report"
         msg.attach(MIMEText(html_content, "html"))
+
+        # Attach CSV file
+        with open(csv_file, "rb") as f:
+            part = MIMEApplication(f.read(), Name=os.path.basename(csv_file))
+            part['Content-Disposition'] = f'attachment; filename="{os.path.basename(csv_file)}"'
+            msg.attach(part)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
@@ -97,6 +130,11 @@ def send_report():
         logging.info("Daily report email sent successfully via STARTTLS!")
     except Exception as e:
         logging.error(f"Failed to send daily report email: {e}")
+
+   
+    sheet.clear()
+    sheet.append_row(["Date/Time", "Species", "Confidence", "Location"])
+    logging.info("Google Sheet cleared and headers restored.")
 
 
 if __name__ == "__main__":
