@@ -262,7 +262,7 @@ The following examples demonstrate the fish species identification and age estim
 
 - **Width (px):** 517  
 - **Height (px):** 1017  
-- **Confidence:** 0.73
+- **Confidence:** 0.73  
 - **Species:** Tulingan
 
 #### Reference Object Detection
@@ -270,12 +270,12 @@ The following examples demonstrate the fish species identification and age estim
 ![Reference Object Example](uploads/example1.png)
 
 - **Coin width (px):** 106  
-- **Coin confidence:** 0.69 
+- **Coin confidence:** 0.69  
 - **Coin diameter (cm):** 2.7  
 - **Pixels per cm calculation:**  
   ```
   pixels_per_cm = width_px / coin_diameter_cm
-           = 106 / 2.7 ≈ 39.25
+               = 106 / 2.7 ≈ 39.25
   ```
 
 #### Size Estimation
@@ -283,39 +283,77 @@ The following examples demonstrate the fish species identification and age estim
 - **Width (cm):**  
   ```
   width_cm = width_px / pixels_per_cm
-        = 517 / 39.25 ≈ 13.16
+          = 517 / 39.25 ≈ 13.16
   ```
 - **Height (cm):**  
   ```
   height_cm = height_px / pixels_per_cm
-        = 1017 / 39.25 ≈ 25.90
+           = 1017 / 39.25 ≈ 25.90
   ```
 - **Length (cm):**  
   ```
   length_cm = max(width_cm, height_cm)
-        = ≈ 25.90
+           = ≈ 25.90
   ```
 
 #### Age Estimation
 
-- **Maturity threshold:** 0.8  
-- **Maturity length:**  
-  ```
-  maturity_length = 78.5 * 0.8 ≈ 62.8
-  ```
-- **Current length:**  
-  ```
-  current_length = 25.90
-  ```
-- **Days before maturity:**  
-  ```
-  days_before_maturity = (1.85 - 0.88) * 365 ≈ 353 days
-  ```
+The age estimation uses the von Bertalanffy growth function:
+
+```
+t = t0 - (1/K) * ln(1 - (L / L_inf))
+```
+Where:
+- `L` = observed length (cm)
+- `L_inf` = asymptotic maximum length (from config.py)
+- `K` = growth coefficient (from config.py)
+- `t0` = theoretical age at length zero (from config.py)
+
+For Tulingan (from config.py):
+- `L_inf = 78.5`
+- `K = 1.25`
+- `t0 = 0.85`
+
+**Calculate current age:**
+```
+t_current = t0 - (1/K) * ln(1 - (L / L_inf))
+          = 0.85 - (1/1.25) * ln(1 - (25.90 / 78.5))
+          ≈ 0.85 - 0.8 * ln(1 - 0.33)
+          ≈ 0.85 - 0.8 * ln(0.67)
+          ≈ 0.85 - 0.8 * (-0.4005)
+          ≈ 0.85 + 0.3204
+          ≈ 1.17 years
+```
+
+**Maturity threshold:** 0.8  
+**Maturity length:**  
+```
+maturity_length = L_inf * 0.8
+                = 78.5 * 0.8
+                = 62.8 cm
+```
+
+**Age at maturity:**
+```
+t_maturity = t0 - (1/K) * ln(1 - (maturity_length / L_inf))
+           = 0.85 - (1/1.25) * ln(1 - (62.8 / 78.5))
+           = 0.85 - 0.8 * ln(1 - 0.80)
+           = 0.85 - 0.8 * ln(0.20)
+           = 0.85 - 0.8 * (-1.6094)
+           = 0.85 + 1.2875
+           = 2.14 years
+```
+
+**Days before maturity:**
+```
+days_before_maturity = (t_maturity - t_current) * 365
+                     = (2.14 - 1.17) * 365
+                     ≈ 353 days
+```
 
 - **Summary:**  
   The detected Tulingan (length ≈ 25.90 cm) is not yet mature. Estimated days before maturity: **353**.
 
----
 
 ### Example 2
 
@@ -360,27 +398,30 @@ The following examples demonstrate the fish species identification and age estim
   ```
 
 #### Age Estimation
-
 - **Maturity threshold:** 0.8  
 - **Maturity length:**  
   ```
-  maturity_length = 30.9 * 0.8 ≈ 24.0
+  maturity_length = 30.9 * 0.8
+                  = 24.72
+                  ≈ 24.0 cm 
   ```
 - **Current length:**  
   ```
   length_cm = 27.33
   ```
-- **Maturity status:**  
-  Since `length_cm` (27.33 cm) ≥ `maturity_length` (24.0 cm), the Lapu-Lapu is already mature.
+
 - **Days before maturity:**  
   ```
+  length_cm >= maturity_length
+  fish is already mature
   days_before_maturity = 0
+
   ```
 
 - **Summary:**  
   The detected Lapu-Lapu (length ≈ 27.33 cm) is already mature. No days remain before maturity.
 
----
+
 
 ## Official Documentation
 

@@ -29,14 +29,14 @@ MAX_FILE_SIZE = 3 * 1024 * 1024  # 3MB
 
 
 
-# services/config.py
+
 
 CLASS_CONF_THRESHOLDS = {
-    "ISLAND MACKEREL": 0.5,       # only accept Bangus if confidence ≥ 0.7
-    "LAPU-LAPU": 0.5,      # example for Tilapia
-    "TULINGAN": 0.5,   # another example
-    "BANGUS": 0.5,        # only accept Bangus if confidence ≥ 0.7
-    "TILAPIA": 0.5,        # only accept Tilapia if confidence ≥ 0.6
+    "ISLAND MACKEREL": 0.5,       
+    "LAPU-LAPU": 0.5,      
+    "TULINGAN": 0.5,   
+    "BANGUS": 0.5,        
+    "TILAPIA": 0.5,        
     "0": 0.1,
     "1": 0.1,
     "2": 0.1

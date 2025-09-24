@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from oauth2client.service_account import ServiceAccountCredentials
 import logging
 
@@ -55,23 +54,36 @@ def get_recent_data():
 
 def build_csv_file(recent_data):
     """Generate a daily CSV report and return the filename."""
-    filename = f"daily_report_{datetime.now().strftime('%Y%m%d')}.csv"
-    headers = ["Date/Time", "Species", "Confidence", "Location"]
+    folder = "reports"  
+    os.makedirs(folder, exist_ok=True)  
+
+    filename = os.path.join(folder, f"daily_report_{datetime.now().strftime('%Y%m%d')}.csv")
+    headers = ["INTERFERENCE ID", "Species", "Confidence", "Width (px)", "Height (px)", 
+               "Width (cm)", "Height (cm)", "Length (cm)", "Area (cm²)", 
+               "Days Before Maturity", "Pixels per cm", "Coin Label", "Coin Confidence", "Date/Time"]
 
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=headers)
         writer.writeheader()
         for row in recent_data:
             writer.writerow({
-                "Date/Time": row.get("Date/Time", ""),
+                "INTERFERENCE ID": row.get("INTERFERENCE ID", ""),
                 "Species": row.get("Species", ""),
                 "Confidence": row.get("Confidence", ""),
-                "Location": row.get("Location", "")
+                "Width (px)": row.get("Width (px)", ""),
+                "Height (px)": row.get("Height (px)", ""),
+                "Width (cm)": row.get("Width (cm)", ""),
+                "Height (cm)": row.get("Height (cm)", ""),
+                "Length (cm)": row.get("Length (cm)", ""),
+                "Area (cm²)": row.get("Area (cm²)", ""),
+                "Days Before Maturity": row.get("Days Before Maturity", ""),
+                "Pixels per cm": row.get("Pixels per cm", ""),
+                "Coin Label": row.get("Coin Label", ""),
+                "Coin Confidence": row.get("Coin Confidence", ""),
+                "Date/Time": row.get("Date/Time", "")
             })
 
     return filename
-
-
 
 
 def build_email_content(recent_data):
@@ -95,7 +107,7 @@ def build_email_content(recent_data):
 
 
 def send_report():
-    """Send daily fish detection report via email and archive CSV."""
+    """Send daily fish detection report via email and delete CSV after use."""
     recent_data = get_recent_data()
     if not recent_data:
         logging.info("No recent data to report.")
@@ -113,9 +125,10 @@ def send_report():
 
         # Attach CSV file
         with open(csv_file, "rb") as f:
+            from email.mime.application import MIMEApplication
             part = MIMEApplication(f.read(), Name=os.path.basename(csv_file))
-            part['Content-Disposition'] = f'attachment; filename="{os.path.basename(csv_file)}"'
-            msg.attach(part)
+        part["Content-Disposition"] = f'attachment; filename="{os.path.basename(csv_file)}"'
+        msg.attach(part)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
@@ -131,9 +144,13 @@ def send_report():
     except Exception as e:
         logging.error(f"Failed to send daily report email: {e}")
 
-   
+    # Delete local file
+    os.remove(csv_file)
+    logging.info(f"Deleted local file {csv_file}")
+
+    # Clear the sheet and reset headers
     sheet.clear()
-    sheet.append_row(["Date/Time", "Species", "Confidence", "Location"])
+    sheet.append_row(["INTERFERENCE ID", "Species", "Confidence", "Width (px)", "Height (px)", "Width (cm)", "Height (cm)", "Length (cm)", "Area (cm²)", "Days Before Maturity", "Pixels per cm", "Coin Label", "Coin Confidence", "Date/Time"])
     logging.info("Google Sheet cleared and headers restored.")
 
 

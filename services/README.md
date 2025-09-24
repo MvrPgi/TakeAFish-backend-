@@ -26,6 +26,49 @@ This directory contains the core services for the TakeAFish backend application.
 
 ---
 
+## API Endpoints
+- **POST /upload**
+  - Accepts an image file and coin reference.
+  - Returns species identification and growth parameters.
+
+  Example Request:
+  ```bash
+   ```bash
+   curl -X POST http://localhost:8000/upload \
+      -F "image=@path_to_image.jpg" \
+
+   ```   
+
+   Example Response:
+   ```json
+   
+     "coin_used": {
+       "coin_confidence": 0.8674470782279968,
+       "coin_diameter_cm": 2.3,
+       "coin_label": "1_PESO",
+       "message": "Coin calibration successful",
+       "pixels_per_cm": 37.39130434782609,
+       "width_px": 86.0
+     },
+     "fish_detected": 
+       {
+       "area_cm2": 61.198347755543516,
+       "confidence": 0.5997757911682129,
+       "days_before_maturity": 418.05,
+       "height_cm": 12.783720930232557,
+       "height_px": 478.0,
+       "id": "4ee76963-c099-48d2-b240-8932f6966d73",
+       "length_cm": 12.783720930232557,
+       "species": "Tulingan",
+       "width_cm": 4.78720930232558,
+       "width_px": 179.0
+       }
+
+   ```
+
+
+
+
 ## Setup Instructions For Google Sheets Integration
 
 1. **Create the Google Sheet**

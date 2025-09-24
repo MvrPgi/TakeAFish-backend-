@@ -94,8 +94,10 @@ def run_inference(image_file, api_key_env, model_id_env, threshold=0.10):
 
         filtered_predictions = []
         for pred in result["predictions"]:
-            class_name = pred.get("class", "")
+            class_name = str(pred.get("class", "")).upper()
             conf_threshold = CLASS_CONF_THRESHOLDS.get(class_name, threshold)
+
+            logging.info(f"Class: {class_name}, Confidence: {pred.get('confidence', 0):.2f}, Threshold: {conf_threshold} ")
             if pred.get("confidence", 0) >= conf_threshold:
                 filtered_predictions.append(pred)
 
