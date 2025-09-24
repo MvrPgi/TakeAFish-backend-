@@ -35,6 +35,7 @@ def save_to_sheets(processed_result):
 
         coin_label = coin_used.get("coin_label") or "Default"
         pixels_per_cm = coin_used.get("pixels_per_cm")
+        coin_cofidence = coin_used.get("coin_confidence", 0)
 
         for fish in processed_result["fish_detected"]:
             row = [
@@ -50,7 +51,7 @@ def save_to_sheets(processed_result):
                 fish.get("days_before_maturity"),
                 pixels_per_cm,
                 coin_label,
-                fish.get("coin_confidence"),
+                coin_cofidence,
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             ]
             sheet.insert_row(row, start_row)
