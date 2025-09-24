@@ -50,6 +50,7 @@ def save_to_sheets(processed_result):
                 fish.get("days_before_maturity"),
                 pixels_per_cm,
                 coin_label,
+                fish.get("coin_confidence"),
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             ]
             sheet.insert_row(row, start_row)

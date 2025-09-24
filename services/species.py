@@ -33,12 +33,14 @@ def detect_reference_coin(image_file):
         logging.warning("No coin detected in image.")
         return {"message": "Walang Barya Na Nadetect", "pixels_per_cm": 0}
 
-    coin_prediction = result["predictions"][0]
+    # Pick the most confident coin
+    coin_prediction = max(result["predictions"], key=lambda x: x.get("confidence", 0))
     coin_class_id = coin_prediction.get("class_id", None)
     coin_label = CLASS_ID_TO_COIN.get(coin_class_id, None)
+    coin_confidence = coin_prediction.get("confidence", 0)
 
-    logging.info(f"Coin detected: class_id={coin_class_id}, label={coin_label}")
-    return calculate_pixels_per_cm(coin_prediction, coin_label)
+    logging.info(f"Coin detected: class_id={coin_class_id}, label={coin_label}, confidence={coin_confidence:.2f}")
+    return calculate_pixels_per_cm(coin_prediction, coin_label, coin_confidence)
 
 
 def estimate_age(length_cm, species, maturity_threshold=0.8):
@@ -96,6 +98,8 @@ def process_prediction(result, image_file):
     coin_result = detect_reference_coin(image_file)
     pixels_per_cm = coin_result.get("pixels_per_cm", 0) if isinstance(coin_result, dict) else 0
 
+    logging.info(f"Coin result: {coin_result}")  # Log the coin result for debugging
+
     # Fallback to default PIXELS_PER_CM if coin not detected
     if pixels_per_cm <= 0:
         logging.warning("No coin calibration found, using default pixels_per_cm")
@@ -105,11 +109,21 @@ def process_prediction(result, image_file):
             "coin_label": None,
             "width_px": None,
             "coin_diameter_cm": None,
-            "pixels_per_cm": pixels_per_cm
+            "pixels_per_cm": pixels_per_cm,
+            "coin_confidence": 0
         }
     else:
         logging.info(f"Using coin calibration: {coin_result}")
-        coin_used = coin_result
+        coin_used = {
+            "message": "Coin calibration successful",
+            "coin_label": coin_result.get("coin_label"),
+            "width_px": coin_result.get("width_px"),
+            "coin_diameter_cm": coin_result.get("coin_diameter_cm"),
+            "pixels_per_cm": coin_result.get("pixels_per_cm"),
+            "coin_confidence": coin_result.get("coin_confidence", 0)
+        }
+
+    logging.info(f"Coin used: {coin_used}")  # Log the coin used for debugging
 
     detected_fish = []
     for prediction in result["predictions"]:

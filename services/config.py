@@ -25,4 +25,21 @@ PIXELS_PER_CM = 37.7952755906
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
-MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+MAX_FILE_SIZE = 3 * 1024 * 1024  # 3MB
+
+
+
+# services/config.py
+
+CLASS_CONF_THRESHOLDS = {
+    "ISLAND MACKEREL": 0.5,       # only accept Bangus if confidence ≥ 0.7
+    "LAPU-LAPU": 0.5,      # example for Tilapia
+    "TULINGAN": 0.5,   # another example
+    "BANGUS": 0.5,        # only accept Bangus if confidence ≥ 0.7
+    "TILAPIA": 0.5,        # only accept Tilapia if confidence ≥ 0.6
+    "0": 0.1,
+    "1": 0.1,
+    "2": 0.1
+}
+
+
