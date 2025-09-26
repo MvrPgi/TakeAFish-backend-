@@ -157,6 +157,7 @@ The fish species datasets used in this project are sourced from the following. T
 ### 6. Sakura Tree Dataset (Custom)
 
 - **Origin:** Derived from the Fish Classification, Fish-gres, Fish-pYTORCH, and Fish datasets.
+- **Images**: 17,644 training, 2,098 validation, 1,068 testing.
 - **Purpose:** Designed to address confusion between lapu-lapu and tilapia.
 - **Augmentation:** 2x rotation for orientation robustness.
 - **Model:** YOLOv11 Accurate
@@ -433,5 +434,18 @@ days_before_maturity = (t_maturity - t_current) * 365
 - [Python Documentation](https://docs.python.org/3/)
 - [Pixel to Centimeter Converter](https://www.unitconverters.net/typography/pixel-x-to-centimeter.html)
 
+## References For Fish Species Information
+
+- [WorldFish Center Document 1](https://digitalarchive.worldfishcenter.org/server/api/core/bitstreams/9211bb8d-9bb9-4343-966b-649ff18d9b5b/content?fbclid=IwY2xjawKs9c1leHRuA2FlbQIxMABicmlkETF6UXk4d3VIVU8yTVQ3SmpiAR7xh1yO4KDDvwHKAheu9gOXO8dQje0pUOFV9UV6hsW7qeWVEFVboE5vMThxKA_aem_OTToZCLnRo1YDUkYImM0qg)
+- [WorldFish Center Document 2](https://digitalarchive.worldfishcenter.org/server/api/core/bitstreams/9211bb8d-9bb9-4343-966b-649ff18d9b5b/content?fbclid=IwY2xjawKs9c1leHRuA2FlbQIxMABicmlkETF6UXk4d3VIVU8yTVQ3SmpiAR7xh1yO4KDDvwHKAheu9gOXO8dQje0pUOFV9UV6hsW7qeWVEFVboE5vMThxKA_aem_OTToZCLnRo1YDUkYImM0qg)
+- [WorldFish Center Document 3](https://digitalarchive.worldfishcenter.org/server/api/core/bitstreams/89272db7-1f1e-4b52-ab25-435021227697/content?fbclid=IwY2xjawKr6dhleHRuA2FlbQIxMABicmlkETFaNTRlTmk5b3lBQkR6VFM4AR50xpHvYbSV_1JARIfyYSSG9NbfM3io7jU8lfWcFU5DubYzl28wPEh_5TpFKA_aem_p_qE_CriKqT23bFsPDULPQ)
+- [FishBase: Chanos chanos Growth Summary](https://www.fishbase.se/popdyn/FishPopGrowthSummary.php?ID=95&pref=81192&sex=unsexed&loo=29.40000&k=0.09000&id2=80&genusname=Chanos&speciesname=chanos&fc=98&gm_loo=38.706685042015&gm_lm=1&gm_m=1&gm_k=0.62738168152526&vautoctr=9965&gm_lm_rl=1)
+- [ResearchGate: Length-Based Growth and Stock Characteristics of Nile Tilapia](https://www.researchgate.net/publication/338606784_Ethiopian_Journal_of_Biological_Sciences_Indexed_and_abstracted_by_CABI_AJOL_LENGTH-BASED_GROWTH_AND_STOCK_CHARACTERISTICS_OF_THE_NILE_TILAPIA_OREOCHROMIS_NILOTICUS_LINNAEUS_1758_IN_LAKE_TANA_ETHIOPIA)
+- [StuartXchange: Fish Names](https://www.stuartxchange.org/FishNames.html)
+- [BFAR: April Monthly Retail 2022](https://www.bfar.da.gov.ph/wp-content/uploads/2022/05/AprilMonthlyRetail2022.pdf)
 ## License
+
+
+
+
 
