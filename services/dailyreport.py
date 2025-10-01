@@ -1,3 +1,4 @@
+import base64
 import os
 import smtplib
 import gspread
@@ -17,12 +18,15 @@ EMAIL_ADDRESS = os.getenv("GMAIL_ADDRESS")
 EMAIL_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
 GOOGLE_CREDS_JSON = os.getenv("GOOGLE_CREDS_JSON")
 REPORT_RECIPIENT = os.getenv("REPORT_RECIPIENT")
-
-if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-    raise ValueError("Missing Gmail credentials in .env")
-
+GOOGLE_CREDS_JSON = os.getenv("GOOGLE_CREDS_JSON")
 if not GOOGLE_CREDS_JSON:
-    raise ValueError("Missing Google credentials JSON in .env")
+    raise ValueError("Missing Google credentials JSON in environment")
+
+try:
+    creds_dict = json.loads(base64.b64decode(GOOGLE_CREDS_JSON))
+except Exception:
+    creds_dict = json.loads(GOOGLE_CREDS_JSON)
+
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds_dict = json.loads(GOOGLE_CREDS_JSON)
@@ -40,7 +44,7 @@ def get_recent_data():
         logging.error(f"Failed to fetch Google Sheet data: {e}")
         return []
 
-    one_day_ago = datetime.now() - timedelta(days=1)
+    one_day_ago = datetime.now() - timedelta(days=7)
     recent_data = []
     for row in data:
         try:
