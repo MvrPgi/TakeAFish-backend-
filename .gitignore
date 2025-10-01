@@ -4,3 +4,5 @@ check.py
 app.log
 .gitignore
 service-account.json
+test_server.py  
+test_species.py

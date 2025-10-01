@@ -133,3 +133,15 @@ This directory contains the core services for the TakeAFish backend application.
     ```
 
 
+## Set Up Daily Report Scheduling
+- Use a task scheduler like `cron` (Linux/Mac) or Task Scheduler (Windows) to run `dailyreport.py` at a specific time each day.
+- Example `cron` entry to run at 8 AM daily:
+  ```cron
+  0 8 * * * /path/to/your/python /path/to/services/dailyreport.py
+  ```
+- Ensure the script has execute permissions: `chmod +x dailyreport.py`.
+- Test the scheduling by running the script manually first to ensure it works as expected.
+- Check your email for the report to confirm successful execution.
+- In My case, I used Github Actions to schedule the daily report. You can set up a workflow in your GitHub repository to run the `dailyreport.py` script at a specified time each day using GitHub Actions' scheduling feature. 
+
+refer to the [GitHub Actions documentation](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#scheduled-events) for more details on how to set this up.

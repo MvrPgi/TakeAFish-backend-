@@ -265,6 +265,7 @@ The following examples demonstrate the fish species identification and age estim
 - **Height (px):** 1017  
 - **Confidence:** 0.73  
 - **Species:** Tulingan
+- **Actual Length (cm):** 20-25 cm
 
 #### Reference Object Detection
 
@@ -273,7 +274,7 @@ The following examples demonstrate the fish species identification and age estim
 - **Coin width (px):** 106  
 - **Coin confidence:** 0.69  
 - **Coin diameter (cm):** 2.7  
-- **Pixels per cm calculation:**  
+- **Pixels per cm calculation:** 30-36  
   ```
   pixels_per_cm = width_px / coin_diameter_cm
                = 106 / 2.7 ≈ 39.25
@@ -366,6 +367,7 @@ days_before_maturity = (t_maturity - t_current) * 365
 - **Height (px):** 368  
 - **Confidence:** 0.54
 - **Species:** Lapu-lapu
+- **Actual Length (cm):** 25-27 cm
 
 #### Reference Object Detection
 
