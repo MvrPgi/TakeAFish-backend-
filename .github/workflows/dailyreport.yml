@@ -25,10 +25,10 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "GMAIL_ADDRESS=${{ secrets.GMAIL_ADDRESS }}" >> $GITHUB_ENV
-          echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> $GITHUB_ENV
-          echo "GOOGLE_CREDS_JSON=${{ secrets.GOOGLE_CREDS_JSON }}" >> $GITHUB_ENV
-          echo "REPORT_RECIPIENT=${{ secrets.REPORT_RECIPIENT }}" >> $GITHUB_ENV
+          printf "GMAIL_ADDRESS=%s\n" "${{ secrets.GMAIL_ADDRESS }}" >> $GITHUB_ENV
+          printf "GMAIL_APP_PASSWORD=%s\n" "${{ secrets.GMAIL_APP_PASSWORD }}" >> $GITHUB_ENV
+          printf "GOOGLE_CREDS_JSON=%s\n" "${{ secrets.GOOGLE_CREDS_JSON }}" >> $GITHUB_ENV
+          printf "REPORT_RECIPIENT=%s\n" "${{ secrets.REPORT_RECIPIENT }}" >> $GITHUB_ENV
 
       - name: Run daily report
         run: python services/dailyreport.py
