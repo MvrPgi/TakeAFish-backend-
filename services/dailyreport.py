@@ -18,21 +18,19 @@ EMAIL_ADDRESS = os.getenv("GMAIL_ADDRESS")
 EMAIL_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
 GOOGLE_CREDS_JSON = os.getenv("GOOGLE_CREDS_JSON")
 REPORT_RECIPIENT = os.getenv("REPORT_RECIPIENT")
-GOOGLE_CREDS_JSON = os.getenv("GOOGLE_CREDS_JSON")
+
 if not GOOGLE_CREDS_JSON:
-    raise ValueError("Missing Google credentials JSON in environment")
+    raise ValueError("❌ Missing Google credentials JSON in environment")
 
 try:
-    creds_dict = json.loads(base64.b64decode(GOOGLE_CREDS_JSON))
+    decoded_json = base64.b64decode(GOOGLE_CREDS_JSON).decode("utf-8")
+    creds_dict = json.loads(decoded_json)
 except Exception:
     creds_dict = json.loads(GOOGLE_CREDS_JSON)
 
-
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds_dict = json.loads(GOOGLE_CREDS_JSON)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
-
 sheet = client.open("Fish Predictions").sheet1
 
 
