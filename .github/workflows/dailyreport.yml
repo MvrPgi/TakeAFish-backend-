@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "GMAIL_ADDRESS=${{ secrets.GMAIL_ADDRESS }}" >> $GITHUB_ENV
           echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> $GITHUB_ENV
-          echo "GOOGLE_CREDS_JSON='${{ secrets.GOOGLE_CREDS_JSON }}'" >> $GITHUB_ENV
+          echo "GOOGLE_CREDS_JSON=${{ secrets.GOOGLE_CREDS_JSON }}" >> $GITHUB_ENV
           echo "REPORT_RECIPIENT=${{ secrets.REPORT_RECIPIENT }}" >> $GITHUB_ENV
 
       - name: Run daily report
