@@ -27,9 +27,8 @@ This directory contains the core services for the TakeAFish backend application.
 ---
 
 ## API Endpoints
-- **POST /upload**
-  - Accepts an image file and coin reference.
-  - Returns species identification and growth parameters.
+### POST /upload
+**Description:** Upload an image for fish species identification and age estimation
 
   Example Request:
   ```bash
@@ -40,7 +39,7 @@ This directory contains the core services for the TakeAFish backend application.
    ```   
 
    Example Response:
-   ```json
+   ```json success response 200
    
      "coin_used": {
        "coin_confidence": 0.8674470782279968,
@@ -64,6 +63,29 @@ This directory contains the core services for the TakeAFish backend application.
        "width_px": 179.0
        }
 
+   ```
+   ``` json error response 400
+  {"error": "No image file provided"}  
+  {"error": "File size exceeds 3MB limit"} 
+  {"error": "Unsupported file type"}  
+  {"error": "No fish detected in image"}  
+  {"error": "Internal server error"} 
+   ```
+
+
+### GET /health
+**Description:** Health check endpoint to verify the service is running
+- Example Request:
+  ```bash
+   curl -X GET http://localhost:8000/health
+   ```
+   Example Response:
+   ```json success response 200
+   {
+     "status": "healthy", 
+     "service": "takeafish-backend",
+     "timestamp": "2023-10-01T12:00:00"
+   }
    ```
 
 

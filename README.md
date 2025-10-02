@@ -2,6 +2,25 @@
 
 This repository contains the backend code for the TakeAFish application, which provides fish species identification and age estimation based on uploaded images. The application is built using Flask and leverages pre-trained models for image recognition.
 
+
+## Architecture Overview
+
+TakeAFish uses a distributed architecture:
+
+- **Flutter Mobile App**: User interface and camera capture
+- **Flask Backend API**: ML inference and data processing  
+- **YOLOv11 Models**: Fish species identification and reference object detection
+- **Firebase**: User authentication and real-time data (mobile app)
+- **Google Sheets**: Data persistence and reporting
+- **Cron Jobs**: Automated daily reporting
+
+### Data Flow
+
+1. User captures fish image with or without reference object → Mobile App
+2. Image sent to Flask API → YOLOv11 species model + reference model
+3. Results processed for size/age estimation → Sent back the data to Flutter and stored in Google Sheets
+4. Daily cron job generates reports → Email delivery to stakeholders
+
 ## Project Structure
 
 ```

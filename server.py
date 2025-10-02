@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, jsonify
 import os
 from waitress import serve
@@ -20,6 +21,19 @@ logging.basicConfig(
 @app.route('/')
 def index():
     return render_template('species.html')
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """
+    Minimal health check for Render free tier
+    Render automatically checks the root endpoint every few minutes
+    """
+    return jsonify({
+        "status": "healthy", 
+        "service": "takeafish-backend",
+        "timestamp": datetime.now().isoformat()
+    }), 200
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -70,6 +84,15 @@ def upload_image():
 
     except Exception as e:
         logging.exception("Unexpected error during image processing")
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.remove(temp_file_path)
+                logging.info(f"Temporary file deleted: {temp_file_path}")
+            except Exception as ex:
+                logging.warning(f"Failed to delete temp file: {temp_file_path}. Exception: {ex}")
+
+    finally:
+        # Clean up temporary file
         if temp_file_path and os.path.exists(temp_file_path):
             try:
                 os.remove(temp_file_path)
