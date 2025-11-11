@@ -140,15 +140,8 @@ This directory contains the core services for the TakeAFish backend application.
 
 **Example Request:**
 ```bash
-curl -X GET "http://localhost:8000/monthly-forecast-page?species=TILAPIA&current_size_cm=30&current_age_days=365"
+curl -X GET "http://localhost:8000/monthly-forecast-page"
 ```
-
-**Page Features:**
-- Interactive form to input multiple species and their details.
-- Fields for species name and days before maturity.
-- Option to add more species dynamically.
-- Button to submit and generate forecast.
-- Displays forecast results in JSON format.
 
 **Example HTML Response:**
 ```html
