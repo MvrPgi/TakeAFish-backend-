@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Growth Forecast</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #1f2937;
+    }
+
+    .input-group {
+        display: flex;
+        gap: .5rem;
+        margin-bottom: 1rem;
+    }
+
+    input {
+        padding: .75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        width: 100%;
+        outline: none;
+        transition: .3s;
+    }
+
+    input:focus {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    button {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: .75rem;
+        width: 100%;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    button:hover {
+        background: #2563eb;
+    }
+
+    .add-btn {
+        background: #6b7280;
+        width: auto;
+        padding: .75rem 1.25rem;
+    }
+
+    .add-btn:hover {
+        background: #4b5563;
+    }
+
+    .json-output {
+        background: #1f2937;
+        color: #10b981;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: .9rem;
+        white-space: pre-wrap;
+        display: none;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Monthly Growth Forecast</h2>
+
+    <!-- Dynamic input list -->
+    <div id="inputList">
+        <div class="input-group">
+            <input type="text" placeholder="Species (e.g., TILAPIA)" class="species-input">
+            <input type="number" placeholder="Days before maturity" class="days-input">
+        </div>
+    </div>
+
+    <button class="add-btn" onclick="addSpeciesInput()">+ Add Species</button><br><br>
+
+    <button onclick="submitForecast()">Generate Forecast</button>
+
+    <pre id="jsonOutput" class="json-output"></pre>
+</div>
+
+<script>
+function addSpeciesInput() {
+    const container = document.getElementById("inputList");
+    const group = document.createElement("div");
+    group.classList.add("input-group");
+
+    group.innerHTML = `
+        <input type="text" placeholder="Species (e.g., TILAPIA)" class="species-input">
+        <input type="number" placeholder="Days before maturity" class="days-input">
+    `;
+    container.appendChild(group);
+}
+
+async function submitForecast() {
+    const speciesInputs = document.getElementsByClassName("species-input");
+    const daysInputs = document.getElementsByClassName("days-input");
+
+    let payload = {};
+
+    for (let i = 0; i < speciesInputs.length; i++) {
+        let species = speciesInputs[i].value.trim();
+        let days = parseInt(daysInputs[i].value.trim());
+
+        if (species && !isNaN(days)) {
+            payload[species] = days;
+        }
+    }
+
+    const jsonOutput = document.getElementById("jsonOutput");
+
+    try {
+        const res = await fetch("/monthly-forecast", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        // Display pure JSON without any HTML formatting
+        jsonOutput.style.display = "block";
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+
+    } catch (error) {
+        jsonOutput.style.display = "block";
+        jsonOutput.textContent = JSON.stringify({
+            error: "Failed to connect to server",
+            message: error.message
+        }, null, 2);
+    }
+}
+</script>
+
+</body>
+</html>

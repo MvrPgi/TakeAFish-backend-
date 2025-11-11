@@ -11,7 +11,9 @@ This directory contains the core services for the TakeAFish backend application.
 - **services/species.py**
   - Responsible for species identification and growth parameter calculations.
   - Uses machine learning models to classify fish species and estimate growth from image data.
-
+- **services/monthlyforecast.py**
+  - Generates monthly growth forecasts for identified fish species.
+  - Utilizes growth models and parameters to predict fish size over time.
 - **services/storage.py**
   - Manages data storage, including saving results to Google Sheets.
   - Handles Google API authentication and ensures correct data formatting.
@@ -71,7 +73,108 @@ This directory contains the core services for the TakeAFish backend application.
   {"error": "No fish detected in image"}  
   {"error": "Internal server error"} 
    ```
+### POST /monthly-forecast
+**Description:** Generate a monthly growth forecast for a given fish species and current size
+- Example Request:
+  ```bash
+   curl -X POST http://localhost:8000/monthly-forecast \
+      -H "Content-Type: application/json" \
+      -d '{"TILAPIA":365  "ISLAND MACKEREL": 100,"LAPU-LAPU": 300,"TULINGAN": 400,"BANGUS": 500}'
+   ```
 
+
+  #### Example Response
+
+  ```json
+  {
+    "forecasts": {
+      "TILAPIA": {
+        "current_status": {
+          "current_age_years": 3.47,
+          "current_length_cm": 32.72,
+          "days_before_maturity": 222,
+          "maturity_age_years": 4.08,
+          "maturity_length_cm": 35.36
+        },
+        "monthly_forecast": [
+          {
+            "month": 1,
+            "date": "2025-12-11",
+            "age_years": 3.55,
+            "growth_cm": 0.4,
+            "length_cm": 33.12,
+            "total_growth_cm": 0.4
+          }
+          // ... 11 more months
+        ]
+      },
+      "BANGUS": {
+        "current_status": {
+          "current_age_years": 17.27,
+          "current_length_cm": 23.19,
+          "days_before_maturity": 222,
+          "maturity_age_years": 17.88,
+          "maturity_length_cm": 23.52
+        },
+        "monthly_forecast": [
+          // ... monthly forecast data
+        ]
+      }
+    },
+    "generated_date": "2025-11-11T22:56:10.447800",
+    "message": "Monthly forecast generated successfully"
+  }
+  ```
+
+  #### Error Responses
+
+  ```json
+  {"error": "Invalid species provided"}
+  {"error": "Internal server error"}
+
+
+
+### GET /monthly-forecast-page
+
+**Description:** Displays a web page with a form to generate monthly growth forecasts for fish species.
+
+**Example Request:**
+```bash
+curl -X GET "http://localhost:8000/monthly-forecast-page?species=TILAPIA&current_size_cm=30&current_age_days=365"
+```
+
+**Page Features:**
+- Interactive form to input multiple species and their details.
+- Fields for species name and days before maturity.
+- Option to add more species dynamically.
+- Button to submit and generate forecast.
+- Displays forecast results in JSON format.
+
+**Example HTML Response:**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Growth Forecast</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Monthly Growth Forecast</h2>
+    <div id="inputList">
+      <div class="input-group">
+        <input type="text" placeholder="Species (e.g., TILAPIA)" class="species-input">
+        <input type="number" placeholder="Days before maturity" class="days-input">
+      </div>
+    </div>
+    <button class="add-btn" onclick="addSpeciesInput()">+ Add Species</button><br><br>
+    <button onclick="submitForecast()">Generate Forecast</button>
+    <pre id="jsonOutput" class="json-output"></pre>
+  </div>
+</body>
+</html>
+```
 
 ### GET /health
 **Description:** Health check endpoint to verify the service is running
@@ -87,8 +190,6 @@ This directory contains the core services for the TakeAFish backend application.
      "timestamp": "2023-10-01T12:00:00"
    }
    ```
-
-
 
 
 ## Setup Instructions For Google Sheets Integration
@@ -153,7 +254,6 @@ This directory contains the core services for the TakeAFish backend application.
 
     REPORT_RECIPIENTS = ["recipient1@example.com", "recipient2@example.com"]
     ```
-
 
 ## Set Up Daily Report Scheduling
 - Use a task scheduler like `cron` (Linux/Mac) or Task Scheduler (Windows) to run `dailyreport.py` at a specific time each day.

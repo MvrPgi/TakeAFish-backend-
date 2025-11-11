@@ -4,6 +4,7 @@ import os
 from waitress import serve
 import tempfile
 from services.species import predict_fish_specie, process_prediction
+from services.monthlyforecast import generate_monthly_forecast
 import logging
 from services.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE
 from werkzeug.datastructures import FileStorage
@@ -21,6 +22,8 @@ logging.basicConfig(
 @app.route('/')
 def index():
     return render_template('species.html')
+
+
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -100,10 +103,26 @@ def upload_image():
             except Exception as ex:
                 logging.warning(f"Failed to delete temp file: {temp_file_path}. Exception: {ex}")
 
+
+@app.route('/monthly-forecast-page', methods=['GET'])
+def monthly_forecast_page():
+    return render_template("monthly_forecast.html")  
      
-
-
-
+     
+@app.route('/monthly-forecast', methods=['POST'])
+def monthly_forecast():
+    try:
+        data = request.get_json()
+        result = generate_monthly_forecast(data)
+        
+        if "error" in result:
+            return jsonify(result), 400
+        else:
+            return jsonify(result), 200
+            
+    except Exception as e:
+        logging.exception("Error in monthly forecast endpoint")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
