@@ -79,7 +79,7 @@ This directory contains the core services for the TakeAFish backend application.
   ```bash
    curl -X POST http://localhost:8000/monthly-forecast \
       -H "Content-Type: application/json" \
-      -d '{"TILAPIA":365  "ISLAND MACKEREL": 100,"LAPU-LAPU": 300,"TULINGAN": 400,"BANGUS": 500}'
+      -d '{"TILAPIA":365","ISLAND MACKEREL": 100,"LAPU-LAPU": 300,"TULINGAN": 400,"BANGUS": 500}'
    ```
 
 
@@ -94,7 +94,8 @@ This directory contains the core services for the TakeAFish backend application.
           "current_length_cm": 32.72,
           "days_before_maturity": 222,
           "maturity_age_years": 4.08,
-          "maturity_length_cm": 35.36
+          "maturity_length_cm": 35.36,
+          "current_stage_class": "MEDIUM"
         },
         "monthly_forecast": [
           {
@@ -103,7 +104,8 @@ This directory contains the core services for the TakeAFish backend application.
             "age_years": 3.55,
             "growth_cm": 0.4,
             "length_cm": 33.12,
-            "total_growth_cm": 0.4
+            "total_growth_cm": 0.4,
+            "future_stage_class": "CATCHABLE"
           }
           // ... 11 more months
         ]
@@ -114,7 +116,8 @@ This directory contains the core services for the TakeAFish backend application.
           "current_length_cm": 23.19,
           "days_before_maturity": 222,
           "maturity_age_years": 17.88,
-          "maturity_length_cm": 23.52
+          "maturity_length_cm": 23.52,
+          "current_stage_class": "SMALL"
         },
         "monthly_forecast": [
           // ... monthly forecast data

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import logging
 import math
-from services.config import  GROWTH_PARAMETERS
+from services.config import  GROWTH_PARAMETERS, SPECIES_SIZE_THRESHOLDS
 load_dotenv()  # Load environment variables
 from datetime import datetime, timedelta
 
@@ -20,6 +20,24 @@ def age_to_length(age_years, L_inf, K, t0):
     if age_years <= t0:
         return 0.1  # Very small fish, just above zero
     return L_inf * (1 - math.exp(-K * (age_years - t0)))
+
+
+def get_size_classification(length_cm, L_inf, species=None):
+    """Get size classification with optional species-specific thresholds"""
+    percentage = (length_cm / L_inf) * 100
+    
+    # Use species-specific thresholds if available
+    thresholds = SPECIES_SIZE_THRESHOLDS.get(species, {
+        "SMALL": 40, "MEDIUM": 70, "CATCHABLE": 100
+    })
+    
+    if percentage < thresholds["SMALL"]:
+        return {"class": "SMALL", "percentage": round(percentage, 2), "description": "Juvenile, not for harvest"}
+    elif percentage < thresholds["MEDIUM"]:
+        return {"class": "MEDIUM", "percentage": round(percentage, 2), "description": "Growing, approaching maturity"}
+    else:
+        return {"class": "CATCHABLE", "percentage": round(percentage, 2), "description": "Mature, suitable for harvest"}
+
 
 def calculate_species_forecast(species, days_before_maturity, current_date):
     """Calculate monthly growth forecast for a species using UTILS.py parameters"""
@@ -53,6 +71,9 @@ def calculate_species_forecast(species, days_before_maturity, current_date):
         current_age_years = t0 + 0.1  # Start slightly above t0
     
     current_length = age_to_length(current_age_years, L_inf, K, t0)
+
+    # Get current size classification
+    current_stage_class = get_size_classification(current_length,L_inf)
     
     # Generate 12-month forecast
     monthly_forecast = []
@@ -61,6 +82,9 @@ def calculate_species_forecast(species, days_before_maturity, current_date):
     for month in range(1, 13):
         future_age = current_age_years + (month / 12.0)
         future_length = age_to_length(future_age, L_inf, K, t0)
+
+        # Get size classification for the future month
+        future_stage_class = get_size_classification(future_length, L_inf)
         
         # Calculate growth from previous month
         growth = future_length - previous_length
@@ -73,7 +97,8 @@ def calculate_species_forecast(species, days_before_maturity, current_date):
             "age_years": round(future_age, 2),
             "length_cm": round(future_length, 2),
             "growth_cm": round(growth, 2),
-            "total_growth_cm": round(future_length - current_length, 2)
+            "total_growth_cm": round(future_length - current_length, 2),
+            "future_stage_class": future_stage_class["class"],
         })
         
         previous_length = future_length
@@ -86,7 +111,8 @@ def calculate_species_forecast(species, days_before_maturity, current_date):
             "current_age_years": round(current_age_years, 2),
             "current_length_cm": round(current_length, 2),
             "maturity_length_cm": round(maturity_length, 2),
-            "maturity_age_years": round(maturity_age_years, 2)
+            "maturity_age_years": round(maturity_age_years, 2),
+            "current_stage_class": current_stage_class["class"]
         },
         "monthly_forecast": monthly_forecast
     }
